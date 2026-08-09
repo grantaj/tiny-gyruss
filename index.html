@@ -53,6 +53,9 @@
     angle: -Math.PI / 2,
     dir: 1,
     speed: 1.72,
+    velocity: 1.72,
+    brake: 14.3,
+    accel: 6.9,
     radius: 0,
   };
 
@@ -108,6 +111,7 @@
     player.angle = -Math.PI / 2;
     player.dir = 1;
     player.speed = 1.72;
+    player.velocity = player.speed;
 
     shots.length = 0;
     enemies.length = 0;
@@ -311,7 +315,13 @@
     game.invuln = Math.max(0, game.invuln - dt);
     game.messageTimer = Math.max(0, game.messageTimer - dt);
 
-    player.angle = normAngle(player.angle + player.dir * player.speed * dt);
+    const targetVelocity = player.dir * player.speed;
+    const braking = player.velocity !== 0 && Math.sign(player.velocity) !== Math.sign(targetVelocity);
+    const maxChange = (braking ? player.brake : player.accel) * dt;
+    const velocityError = targetVelocity - player.velocity;
+    if (Math.abs(velocityError) <= maxChange) player.velocity = targetVelocity;
+    else player.velocity += Math.sign(velocityError) * maxChange;
+    player.angle = normAngle(player.angle + player.velocity * dt);
 
     game.fireTimer -= dt;
     if (game.fireTimer <= 0) {
