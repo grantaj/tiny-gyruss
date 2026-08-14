@@ -280,10 +280,16 @@
     game.waveKills = 0;
     game.waveTarget = 12 + game.wave * 3;
     game.spawnGap = Math.max(0.27, 0.72 - game.wave * 0.035);
+    game.spawnTimer = 0.35;
+    game.fireTimer = 0;
     game.message = 'WAVE ' + game.wave;
     game.messageTimer = 1.0;
     game.invuln = Math.max(game.invuln, 0.8);
     game.score += 500;
+
+    shots.length = 0;
+    enemies.length = 0;
+    enemyShots.length = 0;
   }
 
   function updateStars(dt) {
@@ -397,7 +403,7 @@
     for (let i = shots.length - 1; i >= 0; i--) if (shots[i].r < 0) shots.splice(i, 1);
     for (let i = enemies.length - 1; i >= 0; i--) if (!enemies[i].alive) enemies.splice(i, 1);
 
-    if (game.waveKills >= game.waveTarget && enemies.length === 0) nextWave();
+    if (state === STATE.PLAY && game.waveKills >= game.waveTarget) nextWave();
 
     updateParticles(dt);
   }
